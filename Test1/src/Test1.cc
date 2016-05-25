@@ -78,7 +78,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     const reco::Vertex & vtx = (*vertices)[0];
     bestvz = vtx.z(); bestvx = vtx.x(); bestvy = vtx.y();
     bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
-//   if(bestvz < -15.0 || bestvz>15.0) return;
+    if(bestvz < -15.0 || bestvz>15.0) return;
 
     edm::Handle<reco::TrackCollection> tracks;
     iEvent.getByLabel(trackSrc_, tracks);
