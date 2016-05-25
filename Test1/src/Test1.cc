@@ -68,6 +68,8 @@ class Test1 : public edm::EDAnalyzer {
 Test1::Test1(const edm::ParameterSet& iConfig)
 
 {
+
+    dddd
    //now do what ever initialization is needed
 
 }
