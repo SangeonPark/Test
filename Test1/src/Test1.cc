@@ -70,6 +70,7 @@ void
 Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
     using namespace edm;
+    using namespace std;
     
     edm::Handle<reco::VertexCollection> vertices;
     iEvent.getByLabel(vertexSrc_,vertices);
