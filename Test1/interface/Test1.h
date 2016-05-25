@@ -7,9 +7,6 @@
 #include <vector>
 #include <iostream>
 #include <math.h>
-#include <map>
-#include <sstream>
-
 
 #include <TMath.h>
 #include <TH1D.h>
@@ -20,11 +17,8 @@
 #include <TROOT.h>
 #include <TSystem.h>
 #include <TString.h>
-#include <TCanvas.h>
 #include <TVector3.h>
-#include <TRandom.h>
 #include <TNtuple.h>
-#include <TGraph.h>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -40,18 +34,10 @@
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "DataFormats/JetReco/interface/PFJet.h"
-#include "DataFormats/JetReco/interface/PFJetCollection.h"
 
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
-#include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
-
-#include "DataFormats/Candidate/interface/Candidate.h"
-
-#include "DataFormats/Candidate/interface/VertexCompositeCandidate.h"
-#include "DataFormats/Candidate/interface/VertexCompositeCandidateFwd.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"

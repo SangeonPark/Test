@@ -91,10 +91,10 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double pt = cand->pt();
 	double phi = cand->phi();
 
-	//eta
+	//eta cut
 	if(eta > etaCutMax_ || eta < etaCutMin_) continue;
 
-	//trkNHits
+	//trkNHits cut
 	int nhit = tracks->numberOfValidHits();
 	if(nhit <= nHitCut_) continue;
 
