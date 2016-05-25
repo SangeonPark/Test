@@ -45,7 +45,7 @@ Test1::Test1(const edm::ParameterSet& iConfig)
 
     
     trackSrc_ = iConfig.getParameter<edm::InputTag>("trackSrc");
-    vertexSrc_ = iConfig.getParameter<std::string>("vertexSrc");
+    vertexSrc_ = iConfig.getParameter<edm::InputTag>("vertexSrc");
     
    //now do what ever initialization is needed
 
