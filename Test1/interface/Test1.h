@@ -72,8 +72,8 @@ class Test1 : public edm::EDAnalyzer {
     double etaCutMin_;
     double etaCutMax_;
 
-    TString trackSrc_;
-    TString vertexSrc_;
+    edm::InputTag trackSrc_;
+    std::string vertexSrc_;
     
     
 };
