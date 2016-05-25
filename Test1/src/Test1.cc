@@ -19,40 +19,8 @@
 
 
 // system include files
-#include <memory>
+#include "Test/Test1/interface/Test1.h"
 
-// user include files
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-//
-// class declaration
-//
-
-class Test1 : public edm::EDAnalyzer {
-   public:
-      explicit Test1(const edm::ParameterSet&);
-      ~Test1();
-
-      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
-
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-
-      virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-      virtual void endRun(edm::Run const&, edm::EventSetup const&);
-      virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-      virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-
-      // ----------member data ---------------------------
-};
 
 //
 // constants, enums and typedefs
@@ -69,7 +37,16 @@ Test1::Test1(const edm::ParameterSet& iConfig)
 
 {
 
-    dddd
+    nHitCut_ = iConfig.getParameter<int>("nHitCut");
+    dxySigCut_ = iConfig.getParameter<double>("dxySigCut");
+    dzSigCut_ = iConfig.getParameter<double>("dzSigCut");
+    etaCutMin_ = iConfig.getParameter<double>("etaCutMin");
+    etaCutMax_ = iConfig.getParameter<double>("etaCutMax");
+
+    
+    trackSrc_ = iConfig.getParameter<edm::InputTag>("trackSrc");
+    vertexSrc_ = iConfig.getParameter<std::string>("vertexSrc");
+    
    //now do what ever initialization is needed
 
 }
@@ -92,19 +69,50 @@ Test1::~Test1()
 void
 Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
+    using namespace edm;
+    
+    edm::Handle<reco::VertexCollection> vertices;
+    iEvent.getByLabel(vertexSrc_,vertices);
+    double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9;
+    double bestvzError=-999.9, bestvxError=-999.9, bestvyError=-999.9;
+    const reco::Vertex & vtx = (*vertices)[0];
+    bestvz = vtx.z(); bestvx = vtx.x(); bestvy = vtx.y();
+    bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
+//   if(bestvz < -15.0 || bestvz>15.0) return;
+
+    edm::Handle<reco::TrackCollection> tracks;
+    iEvent.getByLabel(trackSrc_, tracks);
 
 
+    for( reco::TrackCollection::const_iterator cand = tracks->begin(); cand != tracks->end(); cand++){
 
-#ifdef THIS_IS_AN_EVENT_EXAMPLE
-   Handle<ExampleData> pIn;
-   iEvent.getByLabel("example",pIn);
-#endif
-   
-#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   ESHandle<SetupData> pSetup;
-   iSetup.get<SetupRecord>().get(pSetup);
-#endif
+	double eta = cand->eta();
+	double charge = (double)cand->charge();
+	double pt = cand->pt();
+	double phi = cand->phi();
+
+	//eta
+	if(eta > etaCutMax_ || eta < etaCutMin_) continue;
+
+	//trkNHits
+	int nhit = tracks->numberOfValidHits();
+	if(nhit <= nHitCut_) continue;
+
+	//DCA
+	math::XYZPoint bestvtx(bestvx,bestvy,bestvz);
+
+	double dzbest = tracks->dz(bestvtx);
+	double dxybest = tracks->dxy(bestvtx);
+	double dzerror = sqrt(tracks->dzError()*tracks->dzError()+bestvzError*bestvzError);
+	double dxyerror = sqrt(tracks->d0Error()*tracks->d0Error()+bestvxError*bestvyError);
+	double dzos = dzbest/dzerror;
+	double dxyos = dxybest/dxyerror;
+	
+	if( dzSigCut_ <= fabs(dzos) || dxySigCut_ <= fabs(dxyos) ) continue;
+
+	double data[7]={pt,eta,phi,charge,dzos,dxyos,nhit};
+	track_Data->Fill(data);
+    }
 }
 
 
@@ -112,6 +120,10 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 Test1::beginJob()
 {
+    dm::Service<TFileService> fs;
+    TH1D::SetDefaultSumw2();
+    track_Data = fs->make< TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
+    
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
