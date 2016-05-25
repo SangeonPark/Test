@@ -80,6 +80,9 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
     if(bestvz < -15.0 || bestvz>15.0) return;
 
+    cout << "test: " << bestvz << bestvx << bestvy << bestvzError << bestvxError << bestvyError;
+    
+    
     edm::Handle<reco::TrackCollection> tracks;
     iEvent.getByLabel(trackSrc_, tracks);
 
@@ -121,7 +124,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 Test1::beginJob()
 {
-    dm::Service<TFileService> fs;
+    edm::Service<TFileService> fs;
     TH1D::SetDefaultSumw2();
     track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
     
