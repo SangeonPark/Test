@@ -44,7 +44,7 @@ Test1::Test1(const edm::ParameterSet& iConfig)
     etaCutMax_ = iConfig.getParameter<double>("etaCutMax");
 
     
-    trackSrc_ = iConfig.getParameter<std::string>("trackSrc");
+    trackSrc_ = iConfig.getParameter<edm::InputTag>("trackSrc");
     vertexSrc_ = iConfig.getParameter<std::string>("vertexSrc");
     
    //now do what ever initialization is needed
@@ -83,7 +83,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<reco::TrackCollection> tracks;
     iEvent.getByLabel(trackSrc_, tracks);
 
-
+/*
     for( reco::TrackCollection::const_iterator cand = tracks->begin(); cand != tracks->end(); cand++){
 
 	double eta = cand->eta();
@@ -113,6 +113,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double data[7]={pt,eta,phi,charge,dzos,dxyos,nhit};
 	track_Data->Fill(data);
     }
+*/
 }
 
 
@@ -122,7 +123,7 @@ Test1::beginJob()
 {
     dm::Service<TFileService> fs;
     TH1D::SetDefaultSumw2();
-    track_Data = fs->make< TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
+    track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
     
 }
 
