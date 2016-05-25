@@ -127,8 +127,7 @@ Test1::beginJob()
 {
     edm::Service<TFileService> fs;
     TH1D::SetDefaultSumw2();
-    
-    //track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
+    track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
     
 }
 
