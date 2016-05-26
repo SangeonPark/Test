@@ -91,7 +91,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<reco::TrackCollection> tracks;
     iEvent.getByLabel(trackSrc_, tracks);
 
-/*
+
     for( reco::TrackCollection::const_iterator cand = tracks->begin(); cand != tracks->end(); cand++){
 
 	double eta = cand->eta();
@@ -121,7 +121,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double data[7]={pt,eta,phi,charge,dzos,dxyos,nhit};
 	track_Data->Fill(data);
     }
-*/
+
 }
 
 
