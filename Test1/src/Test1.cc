@@ -37,7 +37,7 @@ Test1::Test1(const edm::ParameterSet& iConfig)
 
 {
 
-    nHitCut_ = iConfig.getParameter<int>("nHitCut");
+//    nHitCut_ = iConfig.getParameter<int>("nHitCut");
     dxySigCut_ = iConfig.getParameter<double>("dxySigCut");
     dzSigCut_ = iConfig.getParameter<double>("dzSigCut");
     etaCutMin_ = iConfig.getParameter<double>("etaCutMin");
@@ -83,6 +83,8 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     const reco::Vertex & vtx = (*vertices)[0];
     bestvz = vtx.z(); bestvx = vtx.x(); bestvy = vtx.y();
     bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
+
+    //vertices selection
     if(bestvz < -15.0 || bestvz>15.0) return;
 
     cout << "test: " << bestvz << bestvx << bestvy << bestvzError << bestvxError << bestvyError;
@@ -94,6 +96,8 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int N_pos = 0;
     int N_neg = 0;
 
+    int nTracks = 0;
+
 
     for( reco::TrackCollection::const_iterator cand = tracks->begin(); cand != tracks->end(); cand++){
 
@@ -101,26 +105,40 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double charge = (double)cand->charge();
 	double pt = cand->pt();
 	double phi = cand->phi();
-	
 
-	//eta cut
-	if(eta > etaCutMax_ || eta < etaCutMin_) continue;
+	//highPurity
+	if(!cand.quality(reco::TrackBase::highPurity)) continue;
 
 	//trkNHits cut
-	int nhit = cand->numberOfValidHits();
-	if(nhit <= nHitCut_) continue;
-
+/*	int nhit = cand->numberOfValidHits();
+	if(nhit <= nHitCut_) continue; */
+     
 	//DCA
 	math::XYZPoint bestvtx(bestvx,bestvy,bestvz);
-
 	double dzbest = cand->dz(bestvtx);
 	double dxybest = cand->dxy(bestvtx);
 	double dzerror = sqrt(cand->dzError()*cand->dzError()+bestvzError*bestvzError);
 	double dxyerror = sqrt(cand->d0Error()*cand->d0Error()+bestvxError*bestvyError);
 	double dzos = dzbest/dzerror;
 	double dxyos = dxybest/dxyerror;
-	
 	if( dzSigCut_ <= fabs(dzos) || dxySigCut_ <= fabs(dxyos) ) continue;
+
+	//ptError
+	if(fabs(cand.ptError())/cand.pt() > 0.1 ) continue;
+
+	//pt
+	if(cand.pt() <= 0.4) continue;
+
+	//eta
+	if(eta > etaCutMax_ || eta < etaCutMin_) continue;
+
+	nTracks++;
+
+	
+
+	
+
+	//pt
 
 	if(charge>0) N_pos++;
 	if(charge<0) N_neg++;
@@ -131,12 +149,10 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 //	double data[7]={pt,eta,phi,charge,dzos,dxyos,(double)nhit};
 	track_Data->Fill(pt,eta,phi,charge,dzos,dxyos,(double)nhit);
     }
-    int N_tot = N_pos + N_neg;
     int N_diff = N_pos - N_neg;
-    double ach = (double)N_diff/N_tot;
+    double ach = (double)N_diff/nTracks;
     asym_Dist->Fill(ach);
     
-
 }
 
 
@@ -147,7 +163,11 @@ Test1::beginJob()
     edm::Service<TFileService> fs;
     TH1D::SetDefaultSumw2();
     track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
-    asym_Dist = fs->make<TH1D>("h1","Distribution of Charge Asymmetry",25,-0.2,0.2);
+    asym_Dist = fs->make<TH1D>("h1","Distribution of Charge Asymmetry",21,-0.4,0.4);
+    asym_Dist->SetMarkerStyle(21);
+    asym_Dist->SetMarkerSize(0.8);
+    asym_Dist->SetStats(0);
+
     
     
 }
