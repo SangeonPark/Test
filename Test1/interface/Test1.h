@@ -164,7 +164,7 @@ class Test1 : public edm::EDAnalyzer {
       TH1D* asym_Dist;
       
     
-      double nHitCut_;
+      //      double nHitCut_;
       
       double dxySigCut_;
       double dzSigCut_;
