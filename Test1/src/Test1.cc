@@ -103,16 +103,16 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if(eta > etaCutMax_ || eta < etaCutMin_) continue;
 
 	//trkNHits cut
-	int nhit = tracks->numberOfValidHits();
+	int nhit = cand->numberOfValidHits();
 	if(nhit <= nHitCut_) continue;
 
 	//DCA
 	math::XYZPoint bestvtx(bestvx,bestvy,bestvz);
 
-	double dzbest = tracks->dz(bestvtx);
-	double dxybest = tracks->dxy(bestvtx);
-	double dzerror = sqrt(tracks->dzError()*tracks->dzError()+bestvzError*bestvzError);
-	double dxyerror = sqrt(tracks->d0Error()*tracks->d0Error()+bestvxError*bestvyError);
+	double dzbest = cand->dz(bestvtx);
+	double dxybest = cand->dxy(bestvtx);
+	double dzerror = sqrt(cand->dzError()*cand->dzError()+bestvzError*bestvzError);
+	double dxyerror = sqrt(cand->d0Error()*cand->d0Error()+bestvxError*bestvyError);
 	double dzos = dzbest/dzerror;
 	double dxyos = dxybest/dxyerror;
 	
