@@ -160,16 +160,19 @@ class Test1 : public edm::EDAnalyzer {
       virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
 
     // ----------member data ---------------------------
-    TNtuple* track_Data;
+      TNtuple* track_Data;
+      TH1D* asym_Dist;
+      
     
-    double nHitCut_;
-    double dxySigCut_;
-    double dzSigCut_;
-    double etaCutMin_;
-    double etaCutMax_;
-
-    edm::InputTag trackSrc_;
-    std::string vertexSrc_;
+      double nHitCut_;
+      
+      double dxySigCut_;
+      double dzSigCut_;
+      double etaCutMin_;
+      double etaCutMax_;
+      
+      edm::InputTag trackSrc_;
+      std::string vertexSrc_;
     
     
 };

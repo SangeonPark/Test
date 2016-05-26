@@ -85,11 +85,14 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
     if(bestvz < -15.0 || bestvz>15.0) return;
 
-    cout << "test: " << bestvz << bestvx << bestvy << bestvzError << bestvxError << bestvyError;
+//    cout << "test: " << bestvz << bestvx << bestvy << bestvzError << bestvxError << bestvyError;
     
     
     edm::Handle<reco::TrackCollection> tracks;
     iEvent.getByLabel(trackSrc_, tracks);
+
+    int N_pos = 0;
+    int N_neg = 0;
 
 
     for( reco::TrackCollection::const_iterator cand = tracks->begin(); cand != tracks->end(); cand++){
@@ -98,6 +101,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double charge = (double)cand->charge();
 	double pt = cand->pt();
 	double phi = cand->phi();
+	
 
 	//eta cut
 	if(eta > etaCutMax_ || eta < etaCutMin_) continue;
@@ -118,9 +122,20 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 	if( dzSigCut_ <= fabs(dzos) || dxySigCut_ <= fabs(dxyos) ) continue;
 
+	if(charge>0) N_pos++;
+	if(charge<0) N_neg++;
+
+	
+	
+
 //	double data[7]={pt,eta,phi,charge,dzos,dxyos,(double)nhit};
-	track_Data->Fill(pt,eta,phi,charge,dzos,dxyos,(double)nhit);
+//	track_Data->Fill(pt,eta,phi,charge,dzos,dxyos,(double)nhit);
     }
+    int N_tot = N_pos + N_neg;
+    int N_diff = N_pos - N_neg;
+    double ach = (double)N_diff/N_tot;
+    asym_Dist->Fill(ach);
+    
 
 }
 
@@ -131,7 +146,9 @@ Test1::beginJob()
 {
     edm::Service<TFileService> fs;
     TH1D::SetDefaultSumw2();
-    track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
+//    track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
+    asym_Dist = fs->make<TH1D>("h1","Distribution of Charge Asymmetry",25,-0.2,0.2);
+    
     
 }
 
