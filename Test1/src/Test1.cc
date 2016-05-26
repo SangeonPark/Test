@@ -107,7 +107,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double phi = cand->phi();
 
 	//highPurity
-	if(!cand.quality(reco::TrackBase::highPurity)) continue;
+	if(!cand->quality(reco::TrackBase::highPurity)) continue;
 
 	//trkNHits cut
 /*	int nhit = cand->numberOfValidHits();
@@ -124,10 +124,10 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if( dzSigCut_ <= fabs(dzos) || dxySigCut_ <= fabs(dxyos) ) continue;
 
 	//ptError
-	if(fabs(cand.ptError())/cand.pt() > 0.1 ) continue;
+	if(fabs(cand->ptError())/cand->pt() > 0.1 ) continue;
 
 	//pt
-	if(cand.pt() <= 0.4) continue;
+	if(cand->pt() <= 0.4) continue;
 
 	//eta
 	if(eta > etaCutMax_ || eta < etaCutMin_) continue;
@@ -147,7 +147,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 
 //	double data[7]={pt,eta,phi,charge,dzos,dxyos,(double)nhit};
-	track_Data->Fill(pt,eta,phi,charge,dzos,dxyos,(double)nhit);
+	track_Data->Fill(pt,eta,phi,charge,dzos,dxyos);
     }
     int N_diff = N_pos - N_neg;
     double ach = (double)N_diff/nTracks;
