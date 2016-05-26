@@ -118,8 +118,8 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 	if( dzSigCut_ <= fabs(dzos) || dxySigCut_ <= fabs(dxyos) ) continue;
 
-	double data[7]={pt,eta,phi,charge,dzos,dxyos,nhit};
-	track_Data->Fill(data);
+//	double data[7]={pt,eta,phi,charge,dzos,dxyos,(double)nhit};
+	track_Data->Fill(pt,eta,phi,charge,dzos,dxyos,(double)nhit);
     }
 
 }
