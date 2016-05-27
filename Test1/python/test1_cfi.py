@@ -7,7 +7,9 @@ demo = cms.EDAnalyzer('Test1',
                      dxySigCut = cms.double(3.0),
                      dzSigCut = cms.double(3.0),
                      etaCutMin = cms.double(-2.4),
-                     etaCutMax = cms.double(2.4)
+                      etaCutMax = cms.double(2.4),
+                      NTrkMin = cms.int32(185),
+                      NTrkMax = cms.int32(220)
                      
 
 )

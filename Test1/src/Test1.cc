@@ -42,6 +42,9 @@ Test1::Test1(const edm::ParameterSet& iConfig)
     dzSigCut_ = iConfig.getParameter<double>("dzSigCut");
     etaCutMin_ = iConfig.getParameter<double>("etaCutMin");
     etaCutMax_ = iConfig.getParameter<double>("etaCutMax");
+    NTrkMin_ = iConfig.getParameter<int>("NTrkMin");
+    NTrkMax_ = iConfig.getParameter<int>("NTrkMax");
+    
 
     
     trackSrc_ = iConfig.getParameter<edm::InputTag>("trackSrc");
@@ -87,7 +90,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //vertices selection
     if(bestvz < -15.0 || bestvz>15.0) return;
 
-    cout << "test: " << bestvz << bestvx << bestvy << bestvzError << bestvxError << bestvyError;
+//    cout << "test: " << bestvz << bestvx << bestvy << bestvzError << bestvxError << bestvyError;
     
     
     edm::Handle<reco::TrackCollection> tracks;
@@ -97,6 +100,9 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int N_neg = 0;
 
     int nTracks = 0;
+
+    //define the flow vectors 
+    TComplex Q2(0,0);
 
 
     for( reco::TrackCollection::const_iterator cand = tracks->begin(); cand != tracks->end(); cand++){
@@ -126,32 +132,36 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	//ptError
 	if(fabs(cand->ptError())/cand->pt() > 0.1 ) continue;
 
-	//pt
-	if(cand->pt() <= 0.4) continue;
+	if(fabs(eta)<2.4 && pt > 0.4){ nTracks++;}
 
-	//eta
-	if(eta > etaCutMax_ || eta < etaCutMin_) continue;
-
-	nTracks++;
-
+	if(2.4<=fabs(eta) || pt <= 0.3) continue;
 	
 
 	
-
-	//pt
-
 	if(charge>0) N_pos++;
 	if(charge<0) N_neg++;
 
-	
-	
+/*	TComplex e(1,2*phi,1);
+	Q2 += e; */
+
 
 //	double data[7]={pt,eta,phi,charge,dzos,dxyos,(double)nhit};
-	track_Data->Fill(pt,eta,phi,charge,dzos,dxyos);
+//	track_Data->Fill(pt,eta,phi,charge,dzos,dxyos);
     }
+
+    if( nTracks < NTrkMin_ || nTracks >= NTrkMax_ ) return;
+    
+    int N_tot = N_pos + N_neg;
     int N_diff = N_pos - N_neg;
-    double ach = (double)N_diff/nTracks;
+    double ach = (double)N_diff/N_tot;
     asym_Dist->Fill(ach);
+    NTrkHist->Fill(nTracks);
+
+    /*
+    double evt_avg = (Q2.Rho2()-nTracks)/(nTracks*(nTracks-1));
+    double evt_wtd = (Q2.Rho2()-nTracks);
+    sum_wt += nTracks*(nTracks-1);
+    */
     
 
 }
@@ -163,12 +173,18 @@ Test1::beginJob()
 {
     edm::Service<TFileService> fs;
     TH1D::SetDefaultSumw2();
-    track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
-    asym_Dist = fs->make<TH1D>("h1","Distribution of Charge Asymmetry",21,-0.4,0.4);
+    sum_wt = 0;
+//    track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
+    asym_Dist = fs->make<TH1D>("ChargeAsym","Distribution of Charge Asymmetry",21,-0.4,0.4);
+    NTrkHist = fs->make<TH1D>("NTrkHist","NTrack",5000,0,5000);
     asym_Dist->SetMarkerStyle(21);
     asym_Dist->SetMarkerSize(0.8);
     asym_Dist->SetStats(0);
-
+/*
+    npoints = 5;
+    Double_t Bins[npoints+1];
+*/
+    
     
     
 }

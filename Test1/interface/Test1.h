@@ -25,6 +25,7 @@
 #include <TRandom.h>
 #include <TNtuple.h>
 #include <TGraph.h>
+#include <TComplex.h>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -170,6 +171,16 @@ class Test1 : public edm::EDAnalyzer {
       double dzSigCut_;
       double etaCutMin_;
       double etaCutMax_;
+      int NTrkMin_;
+      int NTrkMax_;
+
+      /*
+      int sum_wt;
+      Int_t npoints;
+      */
+      
+      
+      
       
       edm::InputTag trackSrc_;
       std::string vertexSrc_;
