@@ -102,7 +102,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int nTracks = 0;
 
     //define the flow vectors 
-    TComplex Q2(0,0);
+    //   TComplex Q2(0,0);
 
 
     for( reco::TrackCollection::const_iterator cand = tracks->begin(); cand != tracks->end(); cand++){
