@@ -110,7 +110,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double eta = cand->eta();
 	double charge = (double)cand->charge();
 	double pt = cand->pt();
-	double phi = cand->phi();
+//	double phi = cand->phi();
 
 	//highPurity
 	if(!cand->quality(reco::TrackBase::highPurity)) continue;
@@ -173,7 +173,7 @@ Test1::beginJob()
 {
     edm::Service<TFileService> fs;
     TH1D::SetDefaultSumw2();
-    sum_wt = 0;
+//    sum_wt = 0;
 //    track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
     asym_Dist = fs->make<TH1D>("ChargeAsym","Distribution of Charge Asymmetry",21,-0.4,0.4);
     NTrkHist = fs->make<TH1D>("NTrkHist","NTrack",5000,0,5000);

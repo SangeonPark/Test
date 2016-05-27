@@ -163,6 +163,7 @@ class Test1 : public edm::EDAnalyzer {
     // ----------member data ---------------------------
       TNtuple* track_Data;
       TH1D* asym_Dist;
+      TH1D* NTrkHist;
       
     
       //      double nHitCut_;
