@@ -164,7 +164,6 @@ class Test1 : public edm::EDAnalyzer {
       TNtuple* track_Data;
       TH1D* asym_Dist;
       TH1D* NTrkHist;
-      
     
       //      double nHitCut_;
       
@@ -175,14 +174,10 @@ class Test1 : public edm::EDAnalyzer {
       int NTrkMin_;
       int NTrkMax_;
 
-      /*
-      int sum_wt;
-      Int_t npoints;
-      */
-      
-      
-      
-      
+      double sum_wt;
+      double sum_wtdavg;
+
+ 
       edm::InputTag trackSrc_;
       std::string vertexSrc_;
     
