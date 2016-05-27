@@ -77,8 +77,6 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //test to see if things work
 
-
-    
     edm::Handle<reco::VertexCollection> vertices;
     iEvent.getByLabel(vertexSrc_,vertices);
     double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9;
@@ -102,7 +100,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int nTracks = 0;
 
     //define the flow vectors 
-    //   TComplex Q2(0,0);
+    TComplex Q2(0,0);
 
 
     for( reco::TrackCollection::const_iterator cand = tracks->begin(); cand != tracks->end(); cand++){
@@ -110,7 +108,7 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double eta = cand->eta();
 	double charge = (double)cand->charge();
 	double pt = cand->pt();
-//	double phi = cand->phi();
+	double phi = cand->phi();
 
 	//highPurity
 	if(!cand->quality(reco::TrackBase::highPurity)) continue;
@@ -141,8 +139,8 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if(charge>0) N_pos++;
 	if(charge<0) N_neg++;
 
-/*	TComplex e(1,2*phi,1);
-	Q2 += e; */
+	TComplex e(1,2*phi,1);
+	Q2 += e; 
 
 
 //	double data[7]={pt,eta,phi,charge,dzos,dxyos,(double)nhit};
@@ -157,13 +155,14 @@ Test1::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     asym_Dist->Fill(ach);
     NTrkHist->Fill(nTracks);
 
-    /*
-    double evt_avg = (Q2.Rho2()-nTracks)/(nTracks*(nTracks-1));
-    double evt_wtd = (Q2.Rho2()-nTracks);
-    sum_wt += nTracks*(nTracks-1);
-    */
-    
+    double wt = 1.0;
 
+    double evt_avg = (Q2.Rho2()-nTracks)/(nTracks*(nTracks-1));
+    double evt_wtd = wt * evt_avg;
+
+    sum_wt += wt;
+    sum_wtdavg += evt_wtd; 
+    
 }
 
 
@@ -173,19 +172,16 @@ Test1::beginJob()
 {
     edm::Service<TFileService> fs;
     TH1D::SetDefaultSumw2();
-//    sum_wt = 0;
+
+    sum_wt = 0.0;
+    sum_wtdavg = 0.0; 
 //    track_Data = fs->make<TNtuple>("track_Data","track_Data","pt:eta:phi:charge:dzos:dxyos:nhit");
     asym_Dist = fs->make<TH1D>("ChargeAsym","Distribution of Charge Asymmetry",21,-0.4,0.4);
     NTrkHist = fs->make<TH1D>("NTrkHist","NTrack",5000,0,5000);
+
     asym_Dist->SetMarkerStyle(21);
     asym_Dist->SetMarkerSize(0.8);
     asym_Dist->SetStats(0);
-/*
-    npoints = 5;
-    Double_t Bins[npoints+1];
-*/
-    
-    
     
 }
 
@@ -193,6 +189,8 @@ Test1::beginJob()
 void 
 Test1::endJob() 
 {
+    double v2 = sum_wtdavg/sum_wt;
+    std::cout<<v2; 
 }
 
 // ------------ method called when starting to processes a run  ------------
